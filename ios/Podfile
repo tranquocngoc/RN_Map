@@ -5,10 +5,6 @@ platform :ios, '13.0'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'RN_Map' do
-  pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/Simon-TechForm/google-maps-ios-utils.git', :branch => 'feat/support-apple-silicon'
-
-rn_maps_path = '../node_modules/react-native-maps'
-pod 'react-native-google-maps', :path => rn_maps_path
   config = use_native_modules!
 
   # Flags change depending on the env values.
