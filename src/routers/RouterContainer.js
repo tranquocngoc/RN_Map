@@ -19,7 +19,6 @@ const RouterContainer = () => {
         }}>
         <Stack.Screen name="MapScreen" component={MapScreen} />
         <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
-        <Stack.Screen name="SettingScreen" component={SettingScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
