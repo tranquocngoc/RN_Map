@@ -3,7 +3,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MapScreen from '../screens/MapScreen/MapScreen';
 import HistoryScreen from '../screens/HistoryScreen/HistoryScreen';
-import SettingScreen from '../screens/SettingScreen/SettingScreen';
 
 const Stack = createNativeStackNavigator();
 
