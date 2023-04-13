@@ -617,10 +617,17 @@ PODS:
   - Firebase/Firestore (10.7.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 10.7.0)
+  - Firebase/Storage (10.7.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 10.7.0)
+  - FirebaseAppCheckInterop (10.7.0)
+  - FirebaseAuthInterop (10.8.0)
   - FirebaseCore (10.7.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
+  - FirebaseCoreExtension (10.8.0):
+    - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.8.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - FirebaseFirestore (10.7.0):
@@ -636,6 +643,12 @@ PODS:
     - "gRPC-C++ (~> 1.44.0)"
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - FirebaseStorage (10.7.0):
+    - FirebaseAppCheckInterop (~> 10.0)
+    - FirebaseAuthInterop (~> 10.0)
+    - FirebaseCore (~> 10.0)
+    - FirebaseCoreExtension (~> 10.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 2.1)
   - fmt (6.2.1)
   - glog (0.3.5)
   - GoogleUtilities (7.11.1):
@@ -722,6 +735,7 @@ PODS:
     - gRPC-Core/Interface (= 1.44.0)
     - Libuv-gRPC (= 0.0.10)
   - gRPC-Core/Interface (1.44.0)
+  - GTMSessionFetcher/Core (3.1.0)
   - leveldb-library (1.22.2)
   - Libuv-gRPC (0.0.10):
     - Libuv-gRPC/Implementation (= 0.0.10)
@@ -1030,6 +1044,10 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - React-Core
     - RNFBApp
+  - RNFBStorage (17.4.2):
+    - Firebase/Storage (= 10.7.0)
+    - React-Core
+    - RNFBApp
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
@@ -1075,6 +1093,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1083,13 +1102,18 @@ SPEC REPOS:
     - abseil
     - BoringSSL-GRPC
     - Firebase
+    - FirebaseAppCheckInterop
+    - FirebaseAuthInterop
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
     - FirebaseFirestore
+    - FirebaseStorage
     - fmt
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
+    - GTMSessionFetcher
     - leveldb-library
     - Libuv-gRPC
     - nanopb
@@ -1170,6 +1194,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNFBStorage:
+    :path: "../node_modules/@react-native-firebase/storage"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -1183,14 +1209,19 @@ SPEC CHECKSUMS:
   FBLazyVector: 1d83d91816fa605d16227a83f1b2e71c8df09d22
   FBReactNativeSpec: 626e35e73f83c637ff166f906d584f4c6750c251
   Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
+  FirebaseAppCheckInterop: 8e907eea79958960a8bd2058e067f31e03a7914b
+  FirebaseAuthInterop: 5ea2a68b83f5222f6d8688ffc3a49a9e92bb3eba
   FirebaseCore: e317665b9d744727a97e623edbbed009320afdd7
+  FirebaseCoreExtension: d815fd6fec8bb3a0940bc02dd5e3e641ea7229d8
   FirebaseCoreInternal: fa2899eb1f340054858d289e5a0fb935a0a74e52
   FirebaseFirestore: 3963a6edd1c84b4748dab3e2c62624a29d03eca1
+  FirebaseStorage: 4841efa304543e1f9e4ca116c559c7a1ea2a9d0f
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   GoogleUtilities: 9aa0ad5a7bc171f8bae016300bfcfa3fb8425749
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
+  GTMSessionFetcher: c9e714f7eec91a55641e2bab9f45fd83a219b882
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
@@ -1227,9 +1258,10 @@ SPEC CHECKSUMS:
   ReactCommon: af7636436b382db7cde4583bbd642f0978e6e3ed
   RNFBApp: 0f6bd7ee155a50f5e68cd68aab2709a4d24bfdff
   RNFBFirestore: a782f9e265cf715c4058d44923b2017269a1381d
+  RNFBStorage: 9b2b51a94ca6d400e93135e34d615ddc89dfc039
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   Yoga: 44c64131616253fa83366295acdbce3d14926041
 
-PODFILE CHECKSUM: 88fb12396f9063db79d6f1c1cc0abd3f32cf2024
+PODFILE CHECKSUM: 57ccc156671ed4f35690eca69e9c1161cdba24f0
 
 COCOAPODS: 1.11.3
