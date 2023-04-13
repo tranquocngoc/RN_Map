@@ -153,21 +153,19 @@ const MapScreen = ({navigation}) => {
           </View>
         </View>
         <View style={styles.buttonBottom}>
-          {!!distance && (
-            <TouchableOpacity
-              style={[
-                styles.buttonCheckIn,
-                {
-                  backgroundColor: `${
-                    distance > radius ? '#cccc' : 'rgba(0, 255, 0, 0.3)'
-                  }`,
-                },
-              ]}
-              disabled={distance > radius}
-              onPress={() => setModalCheckIn(true)}>
-              <Text style={styles.titleText}>Check In</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={[
+              styles.buttonCheckIn,
+              {
+                backgroundColor: `${
+                  distance > radius ? '#cccc' : 'rgba(0, 255, 0, 0.3)'
+                }`,
+              },
+            ]}
+            disabled={distance > radius}
+            onPress={() => setModalCheckIn(true)}>
+            <Text style={styles.titleText}>Check In</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
