@@ -1,9 +1,29 @@
-import {View, Text, Modal, Pressable, StyleSheet, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Alert,
+  Image,
+  Dimensions,
+  SafeAreaView,
+} from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import React from 'react';
+import React, {useState} from 'react';
 import {CAMERA_OPTION, LIBRARY_OPTION} from '../../../constant';
+import storage from '@react-native-firebase/storage';
+import {Icons} from '../../../themes';
+import {useCheckIn} from '../hooks';
+const {width, height} = Dimensions.get('window');
 
-const ModalCheckIn = ({modalCheckIn, setModalCheckIn, image, setImage}) => {
+const ModalCheckIn = ({modalCheckIn, setModalCheckIn, location}) => {
+  const [options, setOptions] = useState({
+    createDate: new Date(),
+    location: location,
+    url: '',
+  });
+
   const handelCamera = async () => {
     Alert.alert(
       'Select_A_Photo',
@@ -14,13 +34,14 @@ const ModalCheckIn = ({modalCheckIn, setModalCheckIn, image, setImage}) => {
           onPress: () => {
             launchCamera(CAMERA_OPTION, res => {
               if (res.didCancel) {
-                console.log('User cancelled image picker');
+                // console.log('User cancelled image picker');
               } else if (res.error) {
-                console.log('ImagePicker Error: ', res.error);
+                // console.log('ImagePicker Error: ', res.error);
               } else if (res.customButton) {
-                console.log('User tapped custom button: ', res.customButton);
+                // console.log('User tapped custom button: ', res.customButton);
               } else {
-                setImage(res);
+                const img = {...res.assets[0]};
+                uploadsFile(img);
               }
             });
           },
@@ -30,13 +51,14 @@ const ModalCheckIn = ({modalCheckIn, setModalCheckIn, image, setImage}) => {
           onPress: () => {
             launchImageLibrary(LIBRARY_OPTION, res => {
               if (res.didCancel) {
-                console.log('User cancelled image picker');
+                // console.log('User cancelled image picker');
               } else if (res.error) {
-                console.log('ImagePicker Error: ', res.error);
+                // console.log('ImagePicker Error: ', res.error);
               } else if (res.customButton) {
-                console.log('User tapped custom button: ', res.customButton);
+                // console.log('User tapped custom button: ', res.customButton);
               } else {
-                setImage(res);
+                const img = {...res.assets[0]};
+                uploadsFile(img);
               }
             });
           },
@@ -47,23 +69,48 @@ const ModalCheckIn = ({modalCheckIn, setModalCheckIn, image, setImage}) => {
     );
   };
 
+  const uploadsFile = async img => {
+    const reference = storage().ref('images/' + img.fileName);
+    const pathToFile = img.uri;
+    // uploads file
+    await reference.putFile(pathToFile);
+    // DownloadURL
+    const url = await reference.getDownloadURL(pathToFile);
+    // console.log('url', url);
+    setOptions({...options, url});
+  };
+
+  const [add] = useCheckIn('History');
+
   return (
     <Modal animationType="slide" transparent={true} visible={modalCheckIn}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Hello World!</Text>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalCheckIn(!modalCheckIn)}>
-            <Text style={styles.textStyle}>Hide Modal</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={handelCamera}>
-            <Text style={styles.textStyle}>CAMERA</Text>
-          </Pressable>
+      <SafeAreaView style={styles.centeredView}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text
+              onPress={() => setModalCheckIn(!modalCheckIn)}
+              style={styles.modalText}>
+              Back
+            </Text>
+            <Text
+              onPress={() => {
+                add(options);
+                setModalCheckIn(!modalCheckIn);
+              }}
+              style={styles.modalText}>
+              Done
+            </Text>
+          </View>
+          <View style={styles.body}>
+            {options.url && (
+              <Image style={styles.image} source={{uri: options.url}} />
+            )}
+            <Pressable style={styles.button} onPress={handelCamera}>
+              <Image style={styles.icon} source={Icons.ic_camera} />
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
@@ -72,41 +119,52 @@ export default React.memo(ModalCheckIn);
 
 const styles = StyleSheet.create({
   centeredView: {
+    width: width,
+    height: height,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    backgroundColor: '#fff',
+    width: width - 32,
+    height: height / 2,
+    borderRadius: 20,
+  },
+
+  header: {
+    minHeight: 44,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  body: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
+    borderRadius: 50,
+    margin: 8,
   },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
+
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   modalText: {
-    marginBottom: 15,
+    color: '#0070c9',
     textAlign: 'center',
+    marginVertical: 24,
+    marginHorizontal: 40,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  icon: {width: 50, height: 50},
+  image: {
+    width: width / 1.5,
+    height: ((width - 32) * 4) / 5,
+    borderRadius: 20,
+    backgroundColor: '#cccc',
   },
 });

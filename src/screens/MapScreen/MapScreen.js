@@ -20,7 +20,6 @@ import ModalSettings from './components/ModalSettings';
 const MapScreen = ({navigation}) => {
   const [myLocation, setMyLocation] = useState({});
   const [map, setMap] = useState(MAP);
-  const [image, setImage] = useState({});
   const [modalCheckIn, setModalCheckIn] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
   const [options, setOptions] = useState(SETTINGS_DEFAULT);
@@ -48,15 +47,14 @@ const MapScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeView}>
       <ModalCheckIn
-        image={image}
-        setImage={setImage}
         setModalCheckIn={setModalCheckIn}
         modalCheckIn={modalCheckIn}
+        location={myLocation}
       />
       <ModalSettings
         modalSettings={modalSettings}
-        setModalSettings={setModalSettings}
         options={options}
+        setModalSettings={setModalSettings}
         setOptions={setOptions}
         setDistance={setDistance}
         setMap={setMap}
@@ -115,7 +113,16 @@ const MapScreen = ({navigation}) => {
         </View>
         <View style={styles.buttonBottom}>
           <TouchableOpacity
-            style={styles.buttonCheckIn}
+            style={[
+              styles.buttonCheckIn,
+              {
+                backgroundColor: `${
+                  !distance || distance > options.radius
+                    ? '#cccc'
+                    : 'rgba(0, 255, 0, 0.3)'
+                }`,
+              },
+            ]}
             disabled={!distance || distance > options.radius}
             onPress={() => setModalCheckIn(true)}>
             <Text style={styles.titleText}>Check In</Text>

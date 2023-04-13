@@ -27,8 +27,6 @@ const HistoryScreen = ({navigation}) => {
         setData(history);
         setLoading(false);
       });
-
-    // Unsubscribe from events when no longer in use
     return () => subscriber();
   }, []);
 
@@ -37,14 +35,6 @@ const HistoryScreen = ({navigation}) => {
   if (loading) {
     return <ActivityIndicator />;
   }
-
-  // const data = [
-  //   {url: '1', id: '1'},
-  //   {url: '1', id: '2'},
-  //   {url: '1', id: '3'},
-  //   {url: '1', id: '4'},
-  //   {url: '1', id: '5'},
-  // ];
 
   return (
     <SafeAreaView style={styles.container}>
