@@ -7,11 +7,17 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
-import React from 'react';
+import React, {useRef} from 'react';
 const {width, height} = Dimensions.get('window');
 import Geolocation from '@react-native-community/geolocation';
+import {
+  PERMISSIONS,
+  check,
+  openSettings,
+  request,
+} from 'react-native-permissions';
 
-export const getRegionFromLatLongDistance = (lat, lon, radius = 500) => {
+export const getRegionFromLatLongDistance = (lat, lon, radius = 100) => {
   const distance = radius / 2;
   const circumference = 40075;
   const oneDegreeOfLatitudeInMeters = 111.32 * 1000;
@@ -21,13 +27,14 @@ export const getRegionFromLatLongDistance = (lat, lon, radius = 500) => {
   const latitudeDelta = deltaTime + distance / oneDegreeOfLatitudeInMeters;
   const longitudeDelta = Math.abs(
     Math.atan2(
-      Math.sin(angularDistance) * Math.cos(lat),
-      Math.cos(angularDistance) - Math.sin(lat) * Math.sin(lat),
+      Math.sin(angularDistance) * Math.cos(parseFloat(lat)),
+      Math.cos(angularDistance) -
+        Math.sin(parseFloat(lat)) * Math.sin(parseFloat(lat)),
     ),
   );
   return {
-    latitude: lat,
-    longitude: lon,
+    latitude: parseFloat(lat),
+    longitude: parseFloat(lon),
     latitudeDelta: latitudeDelta,
     longitudeDelta: longitudeDelta,
   };
@@ -36,32 +43,59 @@ export const getRegionFromLatLongDistance = (lat, lon, radius = 500) => {
 const ModalSettings = ({
   modalSettings,
   setModalSettings,
-  options,
-  setOptions,
+  assignedLocation,
+  setAssignedLocation,
   setDistance,
   setMap,
   setMyLocation,
+  radius,
+  setRadius,
 }) => {
-  const handlerCurrentLocation = () => {
+  const _radius = useRef(radius);
+  const _latitude = useRef(assignedLocation.latitude);
+  const _longitude = useRef(assignedLocation.longitude);
+
+  const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       info => {
         const _myLocation = {
           latitude: info.coords.latitude,
           longitude: info.coords.longitude,
         };
-        setDistance(_myLocation, options.assignedLocation);
+        const _assignedLocation = {
+          latitude: parseFloat(_latitude.current),
+          longitude: parseFloat(_longitude.current),
+        };
+        setAssignedLocation(_assignedLocation);
+        setRadius(parseFloat(_radius.current));
+        setDistance(_myLocation, _assignedLocation);
         setMyLocation(_myLocation);
         setMap(
-          getRegionFromLatLongDistance(
-            options.assignedLocation.latitude,
-            options.assignedLocation.longitude,
-          ),
+          getRegionFromLatLongDistance(_latitude.current, _longitude.current),
         );
       },
       error => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
-      {enableHighAccuracy: true},
     );
   };
+
+  const handlerCurrentLocation = async () => {
+    const statusCheckLocation = await check(
+      PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+    );
+    if (statusCheckLocation === 'granted') {
+      getCurrentLocation();
+    } else if (statusCheckLocation === 'denied') {
+      const statusRequestLocation = await request(
+        PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+      );
+      if (statusRequestLocation === 'granted') {
+        getCurrentLocation();
+      }
+    } else {
+      openSettings;
+    }
+  };
+
   return (
     <Modal animationType="slide" transparent={true} visible={modalSettings}>
       <View style={styles.centeredView}>
@@ -77,50 +111,32 @@ const ModalSettings = ({
           <View style={styles.formInput}>
             <Text style={styles.textStyle}>Latitude:</Text>
             <TextInput
-              placeholder={`${options.assignedLocation.latitude}`}
+              placeholder={`${assignedLocation.latitude}`}
               placeholderTextColor={'black'}
               style={styles.textInput}
-              onChangeText={latitude => {
-                +latitude &&
-                  setOptions({
-                    ...options,
-                    assignedLocation: {
-                      ...options.assignedLocation,
-                      latitude: +latitude,
-                    },
-                  });
-              }}
+              onChangeText={latitude => (_latitude.current = latitude)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.formInput}>
             <Text style={styles.textStyle}>Longitude:</Text>
             <TextInput
-              placeholder={`${options.assignedLocation.longitude}`}
+              placeholder={`${assignedLocation.longitude}`}
               placeholderTextColor={'black'}
               style={styles.textInput}
-              onChangeText={longitude =>
-                +longitude &&
-                setOptions({
-                  ...options,
-                  assignedLocation: {
-                    ...options.assignedLocation,
-                    longitude: +longitude,
-                  },
-                })
-              }
+              onChangeText={longitude => (_longitude.current = longitude)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.formInput}>
             <Text style={styles.textStyle}>Radius:</Text>
             <TextInput
-              placeholder={`${options.radius}`}
+              placeholder={`${radius}`}
               placeholderTextColor={'black'}
               style={styles.textInput}
-              onChangeText={radius =>
-                +radius && setOptions({...options, radius: +radius})
-              }
+              onChangeText={R => {
+                _radius.current = R;
+              }}
               keyboardType="numeric"
             />
           </View>

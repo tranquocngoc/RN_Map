@@ -31,7 +31,10 @@ const MapScreen = ({navigation}) => {
   const [map, setMap] = useState(MAP);
   const [modalCheckIn, setModalCheckIn] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
-  const [options, setOptions] = useState(SETTINGS_DEFAULT);
+  const [assignedLocation, setAssignedLocation] = useState(
+    SETTINGS_DEFAULT.assignedLocation,
+  );
+  const [radius, setRadius] = useState(SETTINGS_DEFAULT.radius);
   const [distance, setDistance] = useDistance();
 
   const getCurrentLocation = () => {
@@ -48,7 +51,7 @@ const MapScreen = ({navigation}) => {
             _myLocation.longitude,
           ),
         );
-        setDistance(_myLocation, options.assignedLocation);
+        setDistance(_myLocation, assignedLocation);
       },
       error => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
     );
@@ -81,9 +84,11 @@ const MapScreen = ({navigation}) => {
       />
       <ModalSettings
         modalSettings={modalSettings}
-        options={options}
+        radius={radius}
+        setRadius={setRadius}
+        assignedLocation={assignedLocation}
         setModalSettings={setModalSettings}
-        setOptions={setOptions}
+        setAssignedLocation={setAssignedLocation}
         setDistance={setDistance}
         setMap={setMap}
         setMyLocation={setMyLocation}
@@ -92,20 +97,20 @@ const MapScreen = ({navigation}) => {
         <MapView
           provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
           style={styles.map}
-          region={map}
-          // onRegionChange={setMap}
-        >
+          region={map}>
           {!!myLocation.latitude && (
             <Marker coordinate={myLocation} title="MyLocation" pinColor="red" />
           )}
-          <Marker
-            coordinate={options.assignedLocation}
-            title="Word"
-            pinColor="green"
-          />
+          {!!assignedLocation && (
+            <Marker
+              coordinate={assignedLocation}
+              title="Word"
+              pinColor="green"
+            />
+          )}
           <Circle
-            center={options.assignedLocation}
-            radius={options.radius}
+            center={assignedLocation}
+            radius={radius}
             fillColor="rgba(0, 255, 0, 0.3)"
             strokeColor="rgb(240, 240, 240, 1)"
           />
@@ -139,8 +144,8 @@ const MapScreen = ({navigation}) => {
           </View>
           <View style={styles.formText}>
             <Text style={styles.titleText}>Word:</Text>
-            <Text>latitude: {options.assignedLocation.latitude}</Text>
-            <Text>longitude: {options.assignedLocation.longitude}</Text>
+            <Text>latitude: {assignedLocation.latitude}</Text>
+            <Text>longitude: {assignedLocation.longitude}</Text>
           </View>
           <View style={styles.formText}>
             <Text style={styles.titleText}>Distance: </Text>
@@ -148,21 +153,21 @@ const MapScreen = ({navigation}) => {
           </View>
         </View>
         <View style={styles.buttonBottom}>
-          <TouchableOpacity
-            style={[
-              styles.buttonCheckIn,
-              {
-                backgroundColor: `${
-                  !distance || distance > options.radius
-                    ? '#cccc'
-                    : 'rgba(0, 255, 0, 0.3)'
-                }`,
-              },
-            ]}
-            disabled={!distance || distance > options.radius}
-            onPress={() => setModalCheckIn(true)}>
-            <Text style={styles.titleText}>Check In</Text>
-          </TouchableOpacity>
+          {!!distance && (
+            <TouchableOpacity
+              style={[
+                styles.buttonCheckIn,
+                {
+                  backgroundColor: `${
+                    distance > radius ? '#cccc' : 'rgba(0, 255, 0, 0.3)'
+                  }`,
+                },
+              ]}
+              disabled={distance > radius}
+              onPress={() => setModalCheckIn(true)}>
+              <Text style={styles.titleText}>Check In</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </SafeAreaView>
