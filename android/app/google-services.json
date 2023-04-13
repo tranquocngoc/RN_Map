@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "77407385102",
+    "project_id": "mymapproject-9444d",
+    "storage_bucket": "mymapproject-9444d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77407385102:android:5a733ea7d09cc08b5a6e5f",
+        "android_client_info": {
+          "package_name": "com.rn_map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77407385102-8ofpb4ihm0a64b3t0cnbuc6ak6fg5be5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKnN55sNyDDiKJ67b_KX1bauTOt2k3dws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77407385102-8ofpb4ihm0a64b3t0cnbuc6ak6fg5be5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77407385102-3pu6dnrhrogkv6iq8fuutp8pak2t8qh6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "vn.com.meishiv2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77407385102:android:de7993933a464ae35a6e5f",
+        "android_client_info": {
+          "package_name": "vn.com.meishiv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77407385102-8ofpb4ihm0a64b3t0cnbuc6ak6fg5be5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKnN55sNyDDiKJ67b_KX1bauTOt2k3dws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77407385102-8ofpb4ihm0a64b3t0cnbuc6ak6fg5be5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77407385102-3pu6dnrhrogkv6iq8fuutp8pak2t8qh6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "vn.com.meishiv2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
