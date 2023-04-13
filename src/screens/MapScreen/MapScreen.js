@@ -6,16 +6,25 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import React, {useState} from 'react';
 import styles from './MapScreenStyles';
-import MapView, {Circle, Marker} from 'react-native-maps';
+import MapView, {Circle, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import {Icons} from '../../themes';
 import {useDistance} from './hooks';
 import {MAP, SETTINGS_DEFAULT} from '../../constant';
 import ModalCheckIn from './components/ModalCheckIn';
-import ModalSettings from './components/ModalSettings';
+import ModalSettings, {
+  getRegionFromLatLongDistance,
+} from './components/ModalSettings';
+import {
+  PERMISSIONS,
+  check,
+  openSettings,
+  request,
+} from 'react-native-permissions';
 
 const MapScreen = ({navigation}) => {
   const [myLocation, setMyLocation] = useState({});
@@ -23,25 +32,57 @@ const MapScreen = ({navigation}) => {
   const [modalCheckIn, setModalCheckIn] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
   const [options, setOptions] = useState(SETTINGS_DEFAULT);
-  const [distance, setDistance] = useDistance(
-    myLocation,
-    options.assignedLocation,
-  );
+  const [distance, setDistance] = useDistance();
 
-  const handlerCurrentLocation = () => {
+  const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       info => {
         const _myLocation = {
           latitude: info.coords.latitude,
           longitude: info.coords.longitude,
         };
+        console.log(
+          '🚀 ~ file: MapScreen.js:44 ~ getCurrentLocation ~ _myLocation:',
+          _myLocation,
+        );
+
         setMyLocation(_myLocation);
-        setMap(_myLocation);
+        setMap(
+          getRegionFromLatLongDistance(
+            _myLocation.latitude,
+            _myLocation.longitude,
+          ),
+        );
         setDistance(_myLocation, options.assignedLocation);
       },
       error => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
-      {enableHighAccuracy: true},
     );
+  };
+
+  const handlerCurrentLocation = async () => {
+    const statusCheckLocation = await check(
+      PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+    );
+    console.log(
+      '🚀 ~ file: MapScreen.js:67 ~ handlerCurrentLocation ~ statusCheckLocation:',
+      statusCheckLocation,
+    );
+    if (statusCheckLocation === 'granted') {
+      getCurrentLocation();
+    } else if (statusCheckLocation === 'denied') {
+      const statusRequestLocation = await request(
+        PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+      );
+      console.log(
+        '🚀 ~ file: MapScreen.js:74 ~ handlerCurrentLocation ~ statusRequestLocation:',
+        statusRequestLocation,
+      );
+      if (statusRequestLocation === 'granted') {
+        getCurrentLocation();
+      }
+    } else {
+      openSettings;
+    }
   };
 
   return (
@@ -61,8 +102,15 @@ const MapScreen = ({navigation}) => {
         setMyLocation={setMyLocation}
       />
       <View style={styles.container}>
-        <MapView style={styles.map} region={map} onRegionChange={setMap}>
-          <Marker coordinate={myLocation} title="MyLocation" pinColor="red" />
+        <MapView
+          provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
+          style={styles.map}
+          region={map}
+          // onRegionChange={setMap}
+        >
+          {!!myLocation.latitude && (
+            <Marker coordinate={myLocation} title="MyLocation" pinColor="red" />
+          )}
           <Marker
             coordinate={options.assignedLocation}
             title="Word"

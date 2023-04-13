@@ -11,6 +11,28 @@ import React from 'react';
 const {width, height} = Dimensions.get('window');
 import Geolocation from '@react-native-community/geolocation';
 
+export const getRegionFromLatLongDistance = (lat, lon, radius = 500) => {
+  const distance = radius / 2;
+  const circumference = 40075;
+  const oneDegreeOfLatitudeInMeters = 111.32 * 1000;
+  const angularDistance = distance / circumference;
+
+  const deltaTime = Date.now() / 10000000000000000000;
+  const latitudeDelta = deltaTime + distance / oneDegreeOfLatitudeInMeters;
+  const longitudeDelta = Math.abs(
+    Math.atan2(
+      Math.sin(angularDistance) * Math.cos(lat),
+      Math.cos(angularDistance) - Math.sin(lat) * Math.sin(lat),
+    ),
+  );
+  return {
+    latitude: lat,
+    longitude: lon,
+    latitudeDelta: latitudeDelta,
+    longitudeDelta: longitudeDelta,
+  };
+};
+
 const ModalSettings = ({
   modalSettings,
   setModalSettings,
@@ -29,7 +51,12 @@ const ModalSettings = ({
         };
         setDistance(_myLocation, options.assignedLocation);
         setMyLocation(_myLocation);
-        setMap(options.assignedLocation);
+        setMap(
+          getRegionFromLatLongDistance(
+            options.assignedLocation.latitude,
+            options.assignedLocation.longitude,
+          ),
+        );
       },
       error => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
       {enableHighAccuracy: true},
