@@ -58,6 +58,7 @@ const MapScreen = ({navigation}) => {
         setOptions={setOptions}
         setDistance={setDistance}
         setMap={setMap}
+        setMyLocation={setMyLocation}
       />
       <View style={styles.container}>
         <MapView style={styles.map} region={map} onRegionChange={setMap}>

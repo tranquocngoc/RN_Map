@@ -10,7 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {CAMERA_OPTION, LIBRARY_OPTION} from '../../../constant';
 import storage from '@react-native-firebase/storage';
 import {Icons} from '../../../themes';
@@ -23,6 +23,10 @@ const ModalCheckIn = ({modalCheckIn, setModalCheckIn, location}) => {
     location: location,
     url: '',
   });
+
+  useEffect(() => {
+    setOptions(prevOption => ({...prevOption, location}));
+  }, [location]);
 
   const handelCamera = async () => {
     Alert.alert(

@@ -7,7 +7,7 @@ export const useCheckIn = collection => {
     item => {
       firestore()
         .collection(collection)
-        .add({...item, createDate: new Date()})
+        .add({...item, createDate: Date.now()})
         .then(() => {
           console.log('history added!');
         });

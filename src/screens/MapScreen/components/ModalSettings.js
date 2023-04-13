@@ -18,6 +18,7 @@ const ModalSettings = ({
   setOptions,
   setDistance,
   setMap,
+  setMyLocation,
 }) => {
   const handlerCurrentLocation = () => {
     Geolocation.getCurrentPosition(
@@ -27,6 +28,7 @@ const ModalSettings = ({
           longitude: info.coords.longitude,
         };
         setDistance(_myLocation, options.assignedLocation);
+        setMyLocation(_myLocation);
         setMap(options.assignedLocation);
       },
       error => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
