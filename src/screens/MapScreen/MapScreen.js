@@ -41,11 +41,6 @@ const MapScreen = ({navigation}) => {
           latitude: info.coords.latitude,
           longitude: info.coords.longitude,
         };
-        console.log(
-          '🚀 ~ file: MapScreen.js:44 ~ getCurrentLocation ~ _myLocation:',
-          _myLocation,
-        );
-
         setMyLocation(_myLocation);
         setMap(
           getRegionFromLatLongDistance(
@@ -63,19 +58,11 @@ const MapScreen = ({navigation}) => {
     const statusCheckLocation = await check(
       PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
     );
-    console.log(
-      '🚀 ~ file: MapScreen.js:67 ~ handlerCurrentLocation ~ statusCheckLocation:',
-      statusCheckLocation,
-    );
     if (statusCheckLocation === 'granted') {
       getCurrentLocation();
     } else if (statusCheckLocation === 'denied') {
       const statusRequestLocation = await request(
         PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-      );
-      console.log(
-        '🚀 ~ file: MapScreen.js:74 ~ handlerCurrentLocation ~ statusRequestLocation:',
-        statusRequestLocation,
       );
       if (statusRequestLocation === 'granted') {
         getCurrentLocation();
